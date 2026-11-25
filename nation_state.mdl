@@ -1,0 +1,410 @@
+{UTF-8}
+AI Capability= INTEG (
+	AI Growth,
+		Initial AI Capability)
+	~	Dmnl
+	~	How capable and available AI and robotics are (0 = none, 1 = can do any state function).
+	|
+
+AI Growth=
+	IF THEN ELSE(Time < Start Year, 0, AI Speed * AI Capability * (1 - AI Capability))
+	~	Dmnl/Year
+	~	Logistic (S-curve) growth of AI capability. Zero during the spin-up period before Start Year.
+	|
+
+Start Year=
+	2025
+	~	Year
+	~	Spin-up: the model runs from INITIAL TIME with AI capability frozen, so every stock settles at its own equilibrium; results are reported from Start Year.
+	|
+
+AI Speed=
+	0.15
+	~	1/Year
+	~	Scenario lever. Slow 0.08, current 0.15, fast 0.30.
+	|
+
+Initial AI Capability=
+	0.1
+	~	Dmnl
+	~		|
+
+Economic Automation= INTEG (
+	Change in Economic Automation,
+		Initial Economic Automation)
+	~	Dmnl
+	~	a_e: share of production and administration done by machines.
+	|
+
+Change in Economic Automation=
+	(Target Economic Automation - Economic Automation) / Economic Automation Delay
+	~	Dmnl/Year
+	~		|
+
+Target Economic Automation=
+	AI Capability * (1 - Accountability Brake)
+	~	Dmnl
+	~	States automate as far as AI allows, minus what citizens can hold back.
+	|
+
+Accountability Brake=
+	Accountability * Bargaining Power
+	~	Dmnl
+	~	Accountability brake: strong citizens in accountable regimes slow automation. As B falls the brake weakens; this link closes the reinforcing erosion loop R1.
+	|
+
+Accountability=
+	0.7
+	~	Dmnl
+	~	k, same as Game A. Accountable regime 0.7, autocracy 0.1.
+	|
+
+Economic Automation Delay=
+	5
+	~	Year
+	~		|
+
+Initial Economic Automation=
+	0.1
+	~	Dmnl
+	~		|
+
+Force Automation= INTEG (
+	Change in Force Automation,
+		Initial Force Automation)
+	~	Dmnl
+	~	a_f: share of police, military and surveillance done by machines.
+	|
+
+Change in Force Automation=
+	(Target Force Automation - Force Automation) / Force Automation Delay
+	~	Dmnl/Year
+	~		|
+
+Target Force Automation=
+	MIN(1, AI Capability * (1 - Accountability Brake) * Coup Proofing Multiplier)
+	~	Dmnl
+	~		|
+
+Coup Proofing Multiplier=
+	0.5 + 0.5 * (Coup Proofing Switch * Power Concentration + (1 - Coup Proofing Switch) * Power Concentration at Start)
+	~	Dmnl
+	~	Reinforcing loop R2: concentrated regimes invest more in robotic forces. With the switch off, the multiplier is frozen at its Start Year (2025) value (no feedback after 2025).
+	|
+
+Power Concentration at Start=
+	SAMPLE IF TRUE(Time <= Start Year, Power Concentration, Initial Power Concentration)
+	~	Dmnl
+	~	Power concentration tracked during the spin-up and held fixed from Start Year on.
+	|
+
+Coup Proofing Switch=
+	1
+	~	Dmnl
+	~	1 = loop R2 active, 0 = loop removed (sensitivity run).
+	|
+
+Force Automation Delay=
+	8
+	~	Year
+	~	Military procurement is slower than civilian automation.
+	|
+
+Initial Force Automation=
+	0.05
+	~	Dmnl
+	~		|
+
+Effective Economic Automation=
+	Economic Automation * (1 - AI Diffusion Policy)
+	~	Dmnl
+	~	Automation that lets the ruler do without citizens. Citizen-owned AI does not count.
+	|
+
+AI Diffusion Policy=
+	0
+	~	Dmnl
+	~	sigma: share of automated production owned or controlled by citizens. Policy on = 0.5.
+	|
+
+Effective Force Automation=
+	Force Automation * (1 - Distributed Force Control)
+	~	Dmnl
+	~	Robotic forces that obey the ruler alone. Forces under multi-key control can refuse like soldiers.
+	|
+
+Distributed Force Control=
+	0
+	~	Dmnl
+	~	D: share of robotic forces that need sign-off from many independent key-holders. Policy on = 0.5.
+	|
+
+Resistance Floor=
+	1 - Punishment of Failed Revolt / (Revolt Success Chance Today * (1 + Punishment of Failed Revolt))
+	~	Dmnl
+	~	Game B condition 1: above this force automation, citizens stop resisting.
+	|
+
+Citizens Gave Up=
+	IF THEN ELSE(Effective Force Automation > Resistance Floor, 1, 0)
+	~	Dmnl
+	~		|
+
+Repression Pays=
+	IF THEN ELSE(Dependence on Citizens * (1 - Effective Economic Automation) + Repression Cost * (1 - Effective Force Automation) < Citizens Share, 1, 0)
+	~	Dmnl
+	~	Game B condition 2: repression earns more than honouring the contract.
+	|
+
+Contract Broken=
+	Citizens Gave Up * Repression Pays
+	~	Dmnl
+	~	1 when both Game B conditions hold.
+	|
+
+Dependence on Citizens=
+	0.5
+	~	Dmnl
+	~	theta (Game B).
+	|
+
+Citizens Share=
+	0.3
+	~	Dmnl
+	~	s (Game B).
+	|
+
+Repression Cost=
+	0.2
+	~	Dmnl
+	~	m0 (Game B).
+	|
+
+Punishment of Failed Revolt=
+	0.5
+	~	Dmnl
+	~	d (Game B).
+	|
+
+Revolt Success Chance Today=
+	0.6
+	~	Dmnl
+	~	pi0 (Game B).
+	|
+
+Bargaining Power= INTEG (
+	Change in Bargaining Power,
+		Initial Bargaining Power)
+	~	Dmnl
+	~	Citizens' ability to make the state listen.
+	|
+
+Change in Bargaining Power=
+	(Target Bargaining Power - Bargaining Power) / Bargaining Power Delay
+	~	Dmnl/Year
+	~		|
+
+Target Bargaining Power=
+	(Economic Weight * (1 - Effective Economic Automation) + (1 - Economic Weight) * (1 - Effective Force Automation)) * (1 - Repression Effect * Contract Broken)
+	~	Dmnl
+	~	Loop R1 (erosion) and R3 (lock-in).
+	|
+
+Economic Weight=
+	0.5
+	~	Dmnl
+	~	Share of bargaining power that comes from being needed economically (the rest: being needed in the security forces).
+	|
+
+Repression Effect=
+	0.6
+	~	Dmnl
+	~		|
+
+Bargaining Power Delay=
+	3
+	~	Year
+	~		|
+
+Initial Bargaining Power=
+	Economic Weight * (1 - Initial Economic Automation * (1 - AI Diffusion Policy)) + (1 - Economic Weight) * (1 - Initial Force Automation * (1 - Distributed Force Control))
+	~	Dmnl
+	~	Seed value for the spin-up: the bargaining-power target for the seed automation levels.
+	|
+
+Legitimacy= INTEG (
+	Change in Legitimacy,
+		Initial Legitimacy)
+	~	Dmnl
+	~	How far citizens accept the state's rule as rightful.
+	|
+
+Change in Legitimacy=
+	(Target Legitimacy - Legitimacy) / Legitimacy Delay
+	~	Dmnl/Year
+	~		|
+
+Target Legitimacy=
+	Regime Legitimacy Factor * IF THEN ELSE(Contract Broken = 1, 0.3 * Bargaining Power, 0.4 + 0.6 * Bargaining Power)
+	~	Dmnl
+	~		|
+
+Regime Legitimacy Factor=
+	0.5 + 0.5 * Accountability / Reference Accountability
+	~	Dmnl
+	~	Less accountable regimes enjoy less legitimacy for the same citizen power (1 for the accountable regime, about 0.57 for the autocracy).
+	|
+
+Reference Accountability=
+	0.7
+	~	Dmnl
+	~	Accountability of the reference (accountable) regime.
+	|
+
+Legitimacy Delay=
+	5
+	~	Year
+	~		|
+
+Initial Legitimacy=
+	Regime Legitimacy Factor * (0.4 + 0.6 * Initial Bargaining Power)
+	~	Dmnl
+	~	Seed value for the spin-up (contract intact).
+	|
+
+Power Concentration= INTEG (
+	Change in Power Concentration,
+		Initial Power Concentration)
+	~	Dmnl
+	~	How far power sits with a small group.
+	|
+
+Change in Power Concentration=
+	(Target Power Concentration - Power Concentration) / Power Concentration Delay
+	~	Dmnl/Year
+	~		|
+
+Target Power Concentration=
+	1 - Bargaining Power * Legitimacy
+	~	Dmnl
+	~		|
+
+Power Concentration Delay=
+	5
+	~	Year
+	~		|
+
+Initial Power Concentration=
+	1 - Initial Bargaining Power * Initial Legitimacy
+	~	Dmnl
+	~	Equilibrium start.
+	|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 2075
+	~	Year
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 1975
+	~	Year
+	~	The initial time for the simulation. 1975-2025 is a spin-up period (see Start Year).
+	|
+
+SAVEPER  = 0.25
+	~	Year [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.125
+	~	Year [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*View 1
+$192-192-192,0,Times New Roman|12||0-0-0|0-0-0|0-0-255|-1--1--1|-1--1--1|96,96,100,0
+10,1,AI Capability,150,120,50,25,3,3,0,0,0,0,0,0
+10,2,AI Growth,150,40,40,12,8,3,0,0,0,0,0,0
+10,3,AI Speed,40,40,30,12,8,3,0,0,0,0,0,0
+10,4,Economic Automation,450,120,55,25,3,3,0,0,0,0,0,0
+10,5,Change in Economic Automation,450,40,70,12,8,3,0,0,0,0,0,0
+10,6,Target Economic Automation,300,40,60,12,8,3,0,0,0,0,0,0
+10,7,Force Automation,450,320,55,25,3,3,0,0,0,0,0,0
+10,8,Change in Force Automation,450,240,65,12,8,3,0,0,0,0,0,0
+10,9,Target Force Automation,300,240,55,12,8,3,0,0,0,0,0,0
+10,10,Accountability Brake,300,140,50,12,8,3,0,0,0,0,0,0
+10,11,Accountability,200,190,40,12,8,3,0,0,0,0,0,0
+10,12,Coup Proofing Multiplier,300,320,55,12,8,3,0,0,0,0,0,0
+10,13,Effective Economic Automation,650,120,65,12,8,3,0,0,0,0,0,0
+10,14,AI Diffusion Policy,650,60,45,12,8,3,0,0,0,0,0,0
+10,15,Effective Force Automation,650,320,60,12,8,3,0,0,0,0,0,0
+10,16,Distributed Force Control,650,380,55,12,8,3,0,0,0,0,0,0
+10,17,Contract Broken,800,220,40,12,8,3,0,0,0,0,0,0
+10,18,Citizens Gave Up,800,300,40,12,8,3,0,0,0,0,0,0
+10,19,Repression Pays,800,140,40,12,8,3,0,0,0,0,0,0
+10,20,Bargaining Power,1000,220,55,25,3,3,0,0,0,0,0,0
+10,21,Target Bargaining Power,1000,140,55,12,8,3,0,0,0,0,0,0
+10,22,Legitimacy,1200,120,50,25,3,3,0,0,0,0,0,0
+10,23,Target Legitimacy,1200,40,45,12,8,3,0,0,0,0,0,0
+10,24,Power Concentration,1200,320,55,25,3,3,0,0,0,0,0,0
+10,25,Target Power Concentration,1200,400,60,12,8,3,0,0,0,0,0,0
+1,26,3,2,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,27,2,1,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,28,1,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,29,6,5,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,30,5,4,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,31,10,6,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,32,11,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,33,10,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,34,1,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,35,12,9,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,36,9,8,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,37,8,7,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,38,4,13,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,39,14,13,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,40,7,15,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,41,16,15,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,42,13,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,43,15,19,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,44,15,18,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,45,19,17,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,46,18,17,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,47,13,21,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,48,15,21,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,49,17,21,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,50,21,20,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,51,20,10,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,52,20,23,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,53,17,23,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,54,23,22,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,55,20,25,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,56,22,25,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,57,25,24,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,58,24,12,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+///---\\\
+:L<%^E!@
+1:Current.vdfx
+9:Current
+15:0,0,0,0,0,0
+19:100,0
+27:0,
+34:0,
+5:Contract Broken
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:0
+41:0
+42:0
+24:1975
+25:2075
+26:2075
