@@ -1,0 +1,42 @@
+SCENARIOS (break year; bargaining power, legitimacy, concentration in 2075)
+  Accountable Slow    None               holds  B=0.75 L=0.87 P=0.29
+  Accountable Slow    AI diffusion       holds  B=0.85 L=0.93 P=0.18
+  Accountable Slow    Distributed force  holds  B=0.81 L=0.90 P=0.23
+  Accountable Slow    Both               holds  B=0.90 L=0.95 P=0.13
+  Accountable Current None               holds  B=0.56 L=0.77 P=0.51
+  Accountable Current AI diffusion       holds  B=0.77 L=0.87 P=0.30
+  Accountable Current Distributed force  holds  B=0.69 L=0.83 P=0.39
+  Accountable Current Both               holds  B=0.85 L=0.92 P=0.20
+  Accountable Fast    None                2071  B=0.24 L=0.36 P=0.73
+  Accountable Fast    AI diffusion       holds  B=0.74 L=0.85 P=0.35
+  Accountable Fast    Distributed force  holds  B=0.65 L=0.80 P=0.46
+  Accountable Fast    Both               holds  B=0.84 L=0.91 P=0.23
+  Autocracy   Slow    None                2066  B=0.15 L=0.10 P=0.92
+  Autocracy   Slow    AI diffusion       holds  B=0.55 L=0.44 P=0.72
+  Autocracy   Slow    Distributed force  holds  B=0.51 L=0.42 P=0.75
+  Autocracy   Slow    Both               holds  B=0.70 L=0.48 P=0.64
+  Autocracy   Current None                2050  B=0.03 L=0.01 P=0.99
+  Autocracy   Current AI diffusion        2075  B=0.36 L=0.36 P=0.84
+  Autocracy   Current Distributed force  holds  B=0.33 L=0.35 P=0.86
+  Autocracy   Current Both               holds  B=0.59 L=0.44 P=0.73
+  Autocracy   Fast    None                2042  B=0.01 L=0.00 P=1.00
+  Autocracy   Fast    AI diffusion        2062  B=0.12 L=0.05 P=0.97
+  Autocracy   Fast    Distributed force   2072  B=0.18 L=0.21 P=0.91
+  Autocracy   Fast    Both               holds  B=0.56 L=0.42 P=0.75
+COUP-PROOFING LOOP (no policy): break year with / without loop
+  Accountable Slow     holds /  holds   P2075 0.29 / 0.28
+  Accountable Current  holds /  holds   P2075 0.51 / 0.47
+  Accountable Fast      2071 /  holds   P2075 0.73 / 0.55
+  Autocracy   Slow      2066 /   2068   P2075 0.92 / 0.90
+  Autocracy   Current   2050 /   2052   P2075 0.99 / 0.99
+  Autocracy   Fast      2042 /   2042   P2075 1.00 / 1.00
+MONTE CARLO (share of 1000 draws)
+  Accountable F1 fast breaks no later than slow: 100.0%
+  Accountable F2 speed changes timing, not destination: 99.9%
+  Accountable F3 no policy: contract eventually breaks: 99.9%
+  Accountable F4 both policies: contract holds to 2225: 99.0%
+  Autocracy   F1 fast breaks no later than slow: 100.0%
+  Autocracy   F2 speed changes timing, not destination: 100.0%
+  Autocracy   F3 no policy: contract eventually breaks: 100.0%
+  Autocracy   F4 both policies: contract holds to 2225: 82.7%
+Figures: /home/amirreza/tabdeal/publications/ideas/ai-future/AI-and-Society/manuscript/figures  Results: /home/amirreza/tabdeal/publications/ideas/ai-future/AI-and-Society/implementation/results

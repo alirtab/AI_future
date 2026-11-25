@@ -1,0 +1,16 @@
+GAME A (b=0.8, c=0.7, h=0.2)
+  k=0.7: Harmony  payoffs R,T,S,P = (0.0, -0.1, -0.9, -1.1)
+  k=0.1: Prisoner's dilemma  payoffs R,T,S,P = (0.0, 0.5, -0.9, -0.5)
+GAME B {'R': 1.0, 's': 0.3, 'theta': 0.5, 'm0': 0.2, 'L': 1.0, 'd': 0.5, 'kappa': 0.0, 'pi0': 0.6, 'gamma': 1.0}
+  citizens stop resisting at a_c = 0.445
+  ruler prefers repression at a* = 0.572
+  split model: with a_e = 0, repression needs a_f >= None
+  split model: with a_f = 0, repression needs a_e >= None
+  sensitivity of a* (param x0.5 , x1.5):
+    s     : 0.786 , 0.445
+    theta : 0.445 , 0.684
+    m0    : 0.501 , 0.626
+    L     : 0.572 , 0.572
+    d     : 0.667 , 0.572
+    pi0   : 0.572 , 0.630
+Figures written to /home/amirreza/tabdeal/publications/ideas/ai-future/AI-and-Society/manuscript/figures
