@@ -4,9 +4,9 @@ Step 3 - System-dynamics scenarios and robustness for
 
 Single source of truth: nation_state.mdl (Vensim). This script runs it with PySD.
 
-Run (from implementation/):  .venv/bin/python sd_runs.py           (everything)
-                             .venv/bin/python sd_runs.py --no-mc   (skip Monte Carlo)
-Output: ../manuscript/figures/S*.png|pdf, results/*.csv, summary on stdout.
+Run:  .venv/bin/python sd_runs.py           (everything)
+     .venv/bin/python sd_runs.py --no-mc   (skip Monte Carlo)
+Output: figures/S*.png|pdf, results/*.csv, summary on stdout.
 """
 
 import sys
@@ -22,15 +22,18 @@ from matplotlib.colors import ListedColormap
 from matplotlib.patches import Patch
 
 warnings.filterwarnings("ignore")
-ROOT = Path(__file__).resolve().parent.parent
-FIG = ROOT / "manuscript" / "figures"
-RES = ROOT / "implementation" / "results"
+HERE = Path(__file__).resolve().parent
+PAPER_ROOT = HERE.parent
+ROOT = PAPER_ROOT if (PAPER_ROOT / "manuscript").is_dir() else HERE
+FIG = (ROOT / "manuscript" / "figures"
+       if (ROOT / "manuscript").is_dir() else ROOT / "figures")
+RES = ROOT / "implementation" / "results" if ROOT != HERE else ROOT / "results"
 FIG.mkdir(exist_ok=True)
 RES.mkdir(exist_ok=True)
-sys.path.insert(0, str(ROOT / "implementation"))
+sys.path.insert(0, str(HERE))
 from game_theory import C, B_PARAMS, game_b_solve, save  # noqa: E402  (shared style + Game B)
 
-MODEL = pysd.read_vensim(str(ROOT / "implementation" / "nation_state.mdl"))
+MODEL = pysd.read_vensim(str(HERE / "nation_state.mdl"))
 
 REGIMES = {"Accountable": 0.7, "Autocracy": 0.1}
 SPEEDS = {"Slow": 0.08, "Current": 0.15, "Fast": 0.30}
